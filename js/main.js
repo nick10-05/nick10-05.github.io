@@ -233,8 +233,8 @@ function frame() {
 
   // kinetic type
   if (fine && !reduced && pointerSeen) {
-    if (heroLetters.length && scrollY < innerHeight) kinetic(heroLetters, 300, [75, 800], [108, 300]);
-    if (contactLetters.length) { const r = contactLetters[0].getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) kinetic(contactLetters, 340, [75, 800], [110, 250]); }
+    if (heroLetters.length && scrollY < innerHeight) kinetic(heroLetters, 300, [75, 800], [78, 230]);
+    if (contactLetters.length) { const r = contactLetters[0].getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) kinetic(contactLetters, 340, [75, 800], [78, 220]); }
   }
 
   updateTone();
