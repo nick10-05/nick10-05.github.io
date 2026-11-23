@@ -55,8 +55,9 @@ const contactLetters = $$('.contact-big .ch, .cs-title .ch');
 function fitHero() {
   const h = $('.kinetic'); if (!h) return;
   h.style.fontSize = '';
+  heroLetters.forEach(ch => { ch.style.fontVariationSettings = ''; ch._v = ''; });
   const lines = $$('.kline', h);
-  const avail = h.clientWidth * 0.96;
+  const avail = h.clientWidth * 0.88;
   const widest = Math.max(...lines.map(l => l.scrollWidth));
   if (widest > 0) { const fs = parseFloat(getComputedStyle(h).fontSize); h.style.fontSize = Math.min(fs * avail / widest, 300) + 'px'; }
 }
@@ -81,7 +82,8 @@ else {
 
 /* ---------- custom cursor ---------- */
 const cur = $('#cursor'), curLabel = $('#cursorLabel');
-let mx = innerWidth / 2, my = innerHeight / 2, cx = mx, cy = my;
+let mx = -9999, my = -9999, cx = innerWidth / 2, cy = innerHeight / 2, pointerSeen = false;
+addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; pointerSeen = true; }, { passive: true });
 if (fine && !reduced && cur) {
   document.documentElement.classList.add('has-cursor');
   addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; cur.classList.add('on'); }, { passive: true });
@@ -152,7 +154,7 @@ const rowHTML = ([n, t, d, g, c]) => `<li class="rv" data-prev="${esc(g)}" data-
 const sr = $('#skillRows'); if (sr) sr.innerHTML = SKILLS.map(rowHTML).join('');
 const rr = $('#recogRows'); if (rr) rr.innerHTML = RECOG.map(rowHTML).join('');
 const prev = $('#preview'), prevText = $('#previewText');
-let px = mx, py = my, pRot = 0;
+let px = innerWidth / 2, py = innerHeight / 2, pRot = 0;
 if (fine && !reduced && prev) {
   $$('[data-prev]').forEach(li => {
     li.addEventListener('pointerenter', () => { prevText.textContent = li.dataset.prev; prev.style.background = li.dataset.col; prev.classList.add('on'); });
@@ -200,9 +202,9 @@ function kinetic(letters, R, base, near) {
 /* ---------- main loop ---------- */
 function frame() {
   // cursor + preview follow
-  cx = lerp(cx, mx, .2); cy = lerp(cy, my, .2);
+  if (pointerSeen) { cx = lerp(cx, mx, .2); cy = lerp(cy, my, .2); }
   if (cur) cur.style.transform = `translate(${cx}px,${cy}px)`;
-  if (prev) { const nx = lerp(px, mx, .12); pRot = lerp(pRot, clamp((mx - px) * .4, -14, 14), .1); px = nx; py = lerp(py, my, .12); prev.style.transform = `translate(${px}px,${py}px) rotate(${pRot}deg)`; }
+  if (prev && pointerSeen) { const nx = lerp(px, mx, .12); pRot = lerp(pRot, clamp((mx - px) * .4, -14, 14), .1); px = nx; py = lerp(py, my, .12); prev.style.transform = `translate(${px}px,${py}px) rotate(${pRot}deg)`; }
 
   // scroll velocity
   const y = scrollY; vel = lerp(vel, y - lastScroll, .1); lastScroll = y;
@@ -230,9 +232,9 @@ function frame() {
   }
 
   // kinetic type
-  if (fine && !reduced) {
-    if (heroLetters.length && scrollY < innerHeight) kinetic(heroLetters, 320, [75, 800], [125, 250]);
-    if (contactLetters.length) { const r = contactLetters[0].getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) kinetic(contactLetters, 380, [75, 800], [130, 200]); }
+  if (fine && !reduced && pointerSeen) {
+    if (heroLetters.length && scrollY < innerHeight) kinetic(heroLetters, 300, [75, 800], [108, 300]);
+    if (contactLetters.length) { const r = contactLetters[0].getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) kinetic(contactLetters, 340, [75, 800], [110, 250]); }
   }
 
   updateTone();
@@ -284,7 +286,7 @@ void main(){
     const draw = now => {
       if (!reduced) requestAnimationFrame(draw);
       if (!vis) return;
-      bx = lerp(bx, (mx / innerWidth - .5) * 2, .05); by = lerp(by, (my / innerHeight - .5) * 2, .05);
+      const tx = pointerSeen ? (mx / innerWidth - .5) * 2 : 0, ty = pointerSeen ? (my / innerHeight - .5) * 2 : 0; bx = lerp(bx, tx, .05); by = lerp(by, ty, .05);
       gl.uniform2f(uR, cv.width, cv.height); gl.uniform1f(uT, reduced ? 2 : now / 1000);
       gl.uniform2f(uM, bx, by); gl.uniform1f(uS, clamp(scrollY / innerHeight, 0, 1.5) * 2.2);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
