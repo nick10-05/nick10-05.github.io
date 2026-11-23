@@ -61,7 +61,12 @@ function fitHero() {
   const widest = Math.max(...lines.map(l => l.scrollWidth));
   if (widest > 0) { const fs = parseFloat(getComputedStyle(h).fontSize); h.style.fontSize = Math.min(fs * avail / widest, 300) + 'px'; }
 }
-fitHero(); document.fonts?.ready.then(fitHero); addEventListener('resize', fitHero);
+fitHero(); addEventListener('resize', fitHero);
+if (document.fonts) {
+  document.fonts.ready.then(fitHero);
+  document.fonts.load('800 100px Anybody').then(fitHero).catch(() => {});
+  document.fonts.addEventListener('loadingdone', fitHero);
+}
 
 /* ---------- preloader ---------- */
 const loader = $('#loader');
