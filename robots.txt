@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://nick10-05.github.io/sitemap.xml

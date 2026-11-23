@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RelayForge — Nikhil Chandrakanti</title>
+<meta name="description" content="RelayForge: a webhook relay and inspection platform, deployed for ₹0/month.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#0B0B0C">
+<link rel="canonical" href="https://nick10-05.github.io/relayforge.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nikhil Chandrakanti">
+<meta property="og:title" content="RelayForge — a durable webhook relay · Nikhil Chandrakanti">
+<meta property="og:description" content="A webhook relay that loses nothing, even when the server crashes. Postgres-backed queue, retries, dead-letter, replay. 560 CI tests.">
+<meta property="og:url" content="https://nick10-05.github.io/relayforge.html">
+<meta property="og:image" content="https://nick10-05.github.io/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="RelayForge — a durable webhook relay · Nikhil Chandrakanti">
+<meta name="twitter:description" content="A webhook relay that loses nothing, even when the server crashes. Postgres-backed queue, retries, dead-letter, replay. 560 CI tests.">
+<meta name="twitter:image" content="https://nick10-05.github.io/assets/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Nikhil Chandrakanti","jobTitle":"Software Engineer","url":"https://nick10-05.github.io/","address":{"@type":"PostalAddress","addressLocality":"Hyderabad","addressCountry":"IN"},"alumniOf":"MVSR Engineering College","sameAs":["https://github.com/nick10-05","https://www.linkedin.com/in/nnikhilc97","https://leetcode.com/u/nikku-2004"]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,100..900&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="cursor" id="cursor" aria-hidden="true"><span id="cursorLabel"></span></div>
+
+<header class="nav">
+  <a href="index.html" class="nav-logo" aria-label="Home">NC<sup>©</sup></a>
+  <nav aria-label="Primary" class="nav-links">
+    <a href="index.html#work" data-scramble>← All work</a>
+    <a href="index.html#contact" data-scramble>Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section class="cs" data-tone="dark">
+    <p class="label">(Case study 01)</p>
+    <h1 class="cs-title"><span data-kinetic>Relay</span><br><span data-kinetic>Forge</span></h1>
+    <p class="cs-lede">A webhook relay and inspection platform: receive webhooks from any provider, forward them reliably, and see exactly what arrived when something breaks.</p>
+    <dl class="cs-facts">
+      <div><dt>Role</dt><dd>Solo — design, build, deploy</dd></div>
+      <div><dt>Shipped</dt><dd>November 2026</dd></div>
+      <div><dt>Proof</dt><dd>560 CI tests on real Postgres</dd></div>
+      <div><dt>Stack</dt><dd>TypeScript · Node.js · Fastify · PostgreSQL · React · Docker</dd></div>
+    </dl>
+    <div class="cs-btns">
+      <a data-href="relayforgeDemo" href="#" class="pillbtn solid">Live demo ↗</a>
+      <a data-href="relayforgeRepo" href="#" class="pillbtn">Source on GitHub ↗</a>
+      <a data-href="relayforgeDocs" href="#" class="pillbtn">API docs ↗</a>
+      <a data-href="relayforgeDesign" href="#" class="pillbtn">Design doc ↗</a>
+    </div>
+  </section>
+
+  <div class="cs-cover cover-rf" data-tone="dark" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+  <section class="cs-sec" data-tone="dark">
+    <h2>(The problem)</h2>
+    <div class="body">
+      <p>Webhooks fail quietly. A provider sends an event, your server crashes for thirty seconds, and that payment confirmation is simply gone — with no record it ever arrived.</p>
+      <p>RelayForge sits in between: it stores every event <em>before</em> acknowledging it, then delivers it to one or many destinations until it lands.</p>
+    </div>
+  </section>
+
+  <section class="cs-sec" data-tone="dark">
+    <h2>(How it works)</h2>
+    <div class="body">
+      <p>PostgreSQL is the job queue. A transactional outbox records each event; workers claim jobs with <code>SKIP LOCKED</code>, hold them on a lease, and retry with backoff. Anything that keeps failing moves to a dead-letter state you can replay.</p>
+      <p>If a worker dies, its lease expires and another picks the job up. Fenced writes mean a stale worker can never overwrite a newer result — the guarantee is at-least-once delivery.</p>
+    </div>
+  </section>
+
+  <section class="cs-sec" data-tone="dark">
+    <h2>(Security)</h2>
+    <div class="body">
+      <p>An SSRF-safe HTTP client so destinations can't point at internal networks, HMAC-signed deliveries with key rotation, and destination secrets encrypted with AES-256-GCM.</p>
+    </div>
+  </section>
+
+  <section class="cs-sec" data-tone="dark">
+    <h2>(Proof)</h2>
+    <div class="body">
+      <p>560 CI tests run against a real PostgreSQL. In local k6 load tests it ingested 665 requests per second — and after killing the server mid-run, all 38,260 events were still delivered.</p>
+      <p style="color:var(--sub)">Every major decision is written up as one of 5 <a data-href="relayforgeAdrs" href="#" style="border-bottom:1px solid var(--acc)">architecture decision records</a> in the repo.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="contact" data-tone="dark">
+  <a href="index.html#work" data-cursor="Next" style="display:block">
+    <p class="label">(Next project)</p>
+    <h2 class="contact-big" style="font-size:clamp(56px,13vw,220px)"><span data-kinetic>Hostel</span><span data-kinetic>Connect</span></h2>
+  </a>
+  <div class="foot"><span>© 2026 Nikhil Chandrakanti</span><a href="index.html" data-scramble>Home ↑</a></div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
