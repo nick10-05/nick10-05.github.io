@@ -17,6 +17,8 @@ const CONFIG = {
   relayforgeAdrs: 'https://github.com/nick10-05/RelayForge/tree/main/docs/adr',
   hostelDemo: 'https://hostelconnect-o8e6.onrender.com',
   driveRadarDemo: 'https://driveradar-mocha.vercel.app',
+  cricketRepo: 'https://github.com/nick10-05/cricketverse',
+  cricketDemo: 'https://cricketverse-arena.onrender.com',
   hostelStatus: 'Shipped · Demo + GitHub'
 };
 
@@ -233,7 +235,7 @@ function frame() {
     const dist = work.offsetHeight - innerHeight;
     const p = dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
     track.style.transform = `translateX(${-p * Math.max(0, track.scrollWidth - innerWidth)}px)`;
-    if (workNum) workNum.textContent = String(Math.min(4, Math.floor(p * 3.999) + 1)).padStart(2, '0');
+    if (workNum) workNum.textContent = String(Math.min(5, Math.floor(p * 4.999) + 1)).padStart(2, '0');
   }
 
   // kinetic type
